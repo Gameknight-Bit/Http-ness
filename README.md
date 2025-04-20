@@ -39,13 +39,26 @@ n. Bot
 
 Response Code | Action (equiv code expression)
 --------------------------------------------
-100           | print Top of stack  (print)
-200           | Push 'VAL' in stack  (push)
+(Builtin Functions)
+100           | print Top of stack (print)
+101           | 
+
+(Simple Operations)
+200           | Push 'VAL' in stack as a char* (push)
 201           | Add two top values on stack (add Top+Nxt)
 202           | Subtract two top values on stack (sub Top-Nxt)
 203           | Div two top values on stack (div Top/Nxt)
 204           | Mult two top values on stack (mul Top*Nxt)
+205           | Push 'VAL' in stack as a long (push) [uses aoti]
+206           | Duplicate top value (dup Top -> Top, Top)
+207           | Inc top value on stack (inc ++Top)
+208           | Dec top value on stack (dec --Top)
+
+(Looping/If Statements)
 300           | If top != 0 jump back 'VAL' urls (jmp)
+301           | Not of top (if 0 => 1 | _ => 0) (! op)
+
+(Misc)
 400           | Pop top of stack off (pop)
 402           | Payment required to execute this instruction
 418           | Do something random! (* abstract *)
@@ -55,11 +68,6 @@ Response Code | Action (equiv code expression)
 
 Other Codes   | NOP
 
-Various Custom Headers to find
-
-
-
 #CODING TIPS:
-
 Use httpstat.us!!!!
 (although this gets rid of the fun...)
