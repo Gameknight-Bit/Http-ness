@@ -6,10 +6,11 @@
  * @date: 4/20/2025
  */
 
+#include "Stack.h"
+
 struct runtime {
-    long *playground; //Array of values to be changed
-    
-    struct nlist; //Hashmap of variables
+    stack_o playground; //actual env
+    int current_url; //instruction pointer
 };
 
 struct responseParsed {

@@ -6,7 +6,9 @@
  * @date: 4/20/2025
  */
 
-#include "dict.h"
+#include "Stack.h"
+#include "url-parser.h"
+#include "csapp.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -19,9 +21,21 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
+#define MAXLINE 8192 /* Max text line length */
+
 struct runtime {
-    struct nlist; //Dict of variables
-    
+    stack_o playground; //actual env
+    int current_url; //instruction pointer
+    char **url_strings; //All url strings to run
+    size_t size_of_prog; //Length of url_strings array
 };
 typedef struct runtime runtime_env;
 
@@ -78,6 +92,72 @@ char** strSplit(char* a_str, const char a_delim)
     return result;
 }
 
+
+static const char *header_user_agent = "Mozilla/5.0"
+                                       " (X11; Linux x86_64; rv:3.10.0)"
+                                       " Gecko/20250408 Firefox/63.0.1";
+/**
+ * @brief Handle's url string and returns a server response (or NULL if it failed...)
+ */
+char *handleHTTP(char *url) {
+    URL_PARTS *parsedURL = calloc(1, sizeof(parsedURL));
+    if (parsedURL == NULL){
+        printf("Malloc error: retry again!!");
+        return NULL;
+    }
+    if (!(ParseURL(url, parsedURL))) {
+        printf("Error parsing URL!!!!");
+        return NULL;
+    }
+
+    char serverRequest[MAXLINE];
+    char buf[MAXLINE];
+    int buflen = snprintf(serverRequest, MAXLINE,
+                    "GET %s HTTP/1.1\r\n" \
+                    "Host: %s\r\n" \
+                    "User-Agent: %s\r\n" \
+                    "Connection: close\r\n",
+                    parsedURL->path, parsedURL->authority, header_user_agent);
+    if (buflen >= MAXLINE) {
+        printf("OVERFLOW ERROR!!!!");
+    }
+    // printf("%d\n", buflen);
+
+    printf("Sending the following: \n%s", serverRequest);
+    printf("HOST: %s, PORT: %s\n", parsedURL->authority, parsedURL->port);
+
+    int client_fd = open_clientfd(parsedURL->authority, parsedURL->port);
+    if (client_fd < 0) {
+        printf("Unable to connect to server!!!");
+        return NULL;
+    }
+    printf("Connected to Host\n");
+    printf("Forwarding request...\n");
+    free(parsedURL);
+
+    if (rio_writen(client_fd, serverRequest, strlen(serverRequest)) < 0) {
+        printf("Error writing to host\n");
+        return NULL;
+    }
+
+    printf("Reading from server...\n");
+
+    rio_t rio;
+    rio_readinitb(&rio, client_fd);
+    ssize_t n;
+    printf("Starting...\n\n");
+    char *ret[MAXLINE*20];
+    while ((n = rio_readnb(&rio, buf, MAXLINE)) != 0) {
+        // printf("%ld\n", n);
+        strcat(ret, buf);
+    }
+    close(client_fd);
+
+    printf("Closed!\n");
+
+    return ret;
+}
+
 /**
  * @brief Parses a string (server response) into a struct to
  * be read by the runtime thingy!
@@ -114,4 +194,27 @@ ServerResponse* parseResponse(char *response) {
  */
 runtime_env* init_env() {
     runtime_env *ret = calloc(1, sizeof(runtime_env)); 
+    ret->playground = init_stack();
+    ret->current_url = 0;
+    ret->url_strings = calloc(4096, sizeof(char*));
+    ret->size_of_prog = 0;
+}
+
+/**
+ * @brief add all url strings to this before running the env;
+ */
+void append_url(runtime_env* R, char *url) {
+    R->url_strings[R->size_of_prog] = url;
+    R->size_of_prog += 1;
+}
+
+/**
+ * @brief run environment!!!!
+ * @return 1 if error 0 if successful run!
+ */
+int run_env(runtime_env*R) {
+    while (R->current_url < R->size_of_prog) {
+        char *cur_URL = R->url_strings[R->current_url];
+        char *handleHTTP()
+    }
 }
