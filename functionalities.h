@@ -32,3 +32,39 @@ Response Code | Action (equiv code expression)
 
 Other Codes   | NOP
 */
+
+#include "Stack.h"
+#include <stdlib.h>
+
+#define MAXLINE 8192 /* Max text line length */
+
+struct runtime {
+    stack_o playground; //actual env
+    int current_url; //instruction pointer
+    char **url_strings; //All url strings to run
+    size_t size_of_prog; //Length of url_strings array
+};
+typedef struct runtime runtime_env;
+
+struct responseParsed {
+    int responseCode; //Response Code
+    char **headers; //Headers
+    char **headers_info; //Header-content corresponding to header in index
+};
+typedef struct responseParsed ServerResponse;
+
+void code100(ServerResponse *S, runtime_env *R) {
+
+}
+
+
+/**
+ * @brief Handles http response and routes it to the correct function
+ */
+void route(ServerResponse *S, runtime_env *R) {
+    switch (S->responseCode) {
+        case (100):
+            code100(S, R);
+            break;
+    }
+}

@@ -9,6 +9,7 @@
 #include "Stack.h"
 #include "url-parser.h"
 #include "csapp.h"
+#include "functionalities.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -186,7 +187,7 @@ ServerResponse* parseResponse(char *response) {
     }
 
     free(tokens);
-    return 0;
+    return ret;
 }
 
 /**
@@ -212,9 +213,21 @@ void append_url(runtime_env* R, char *url) {
  * @brief run environment!!!!
  * @return 1 if error 0 if successful run!
  */
-int run_env(runtime_env*R) {
+int run_env(runtime_env *R) {
     while (R->current_url < R->size_of_prog) {
         char *cur_URL = R->url_strings[R->current_url];
-        char *handleHTTP()
+        char *ServResp = handleHTTP(cur_URL);
+        if (ServResp == NULL) {
+            R->current_url++;
+            printf("Error!");
+            continue;
+        }
+        ServerResponse *resp = parseResponse(ServResp);
+        switch (resp->responseCode){
+            case (100):
+
+        }
+        free(resp);
+        R->current_url++;
     }
 }

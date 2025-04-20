@@ -7,15 +7,19 @@
  */
 
 #include "Stack.h"
+#include <stdlib.h>
 
 struct runtime {
     stack_o playground; //actual env
     int current_url; //instruction pointer
+    char **url_strings; //All url strings to run
+    size_t size_of_prog; //Length of url_strings array
 };
 
 struct responseParsed {
     int responseCode; //Response Code
-
+    char **headers; //Headers
+    char **headers_info; //Header-content corresponding to header in index
 };
 typedef struct responseParsed ServerResponse;
 
