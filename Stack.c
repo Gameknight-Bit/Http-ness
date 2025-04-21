@@ -28,8 +28,18 @@ void push(stack_o S, long data) {
     S->data = data;
 }
 
+size_t length(stack_o S) {
+    stack_o Cur = S->next;
+    size_t len = 0;
+    if (Cur != NULL) {
+        len++;
+        Cur = Cur->next;
+    }
+    return len;
+}
+
 long pop(stack_o S){
-    if (S == NULL | S->next == NULL) {
+    if (S == NULL || S->next == NULL) {
         printf("Error: Stack is empty");
         exit(1);
     }
@@ -37,9 +47,11 @@ long pop(stack_o S){
     S->data = S->next->data;
     stack_o hold = S->next;
     S->next = S->next->next;
+    free(hold);
     return payload;
 }
 
+//peeks top of stack
 long peek(stack_o S){
     if (S == NULL || S->next == NULL) {
         printf("Error: Stack is empty");

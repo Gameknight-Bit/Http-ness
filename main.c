@@ -1,4 +1,5 @@
 #include "csapp.h"
+#include "runner.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -46,6 +47,8 @@ int main(int argc, char **argv) {
     while (fgets(url, sizeof(url), fd) != NULL) {
         handleHTTP(url);
     }
+
+    init_run_env();
 
     return 0;
 }

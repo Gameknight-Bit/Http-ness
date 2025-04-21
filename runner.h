@@ -15,6 +15,7 @@ struct runtime {
     char **url_strings; //All url strings to run
     size_t size_of_prog; //Length of url_strings array
 };
+typedef struct runtime runtime_env;
 
 struct responseParsed {
     int responseCode; //Response Code
@@ -28,3 +29,8 @@ typedef struct responseParsed ServerResponse;
  * be read by the runtime thingy!
  */
 ServerResponse* parseResponse(char *response);
+
+void append_url(runtime_env* R, char *url);
+
+runtime_env* init_run_env();
+

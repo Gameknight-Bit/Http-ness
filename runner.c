@@ -47,6 +47,17 @@ struct responseParsed {
 };
 typedef struct responseParsed ServerResponse;
 
+/**
+ * @brief Intiltialize Program Env
+ */
+runtime_env* init_run_env() {
+    runtime_env *ret = calloc(1, sizeof(runtime_env)); 
+    ret->playground = init_stack();
+    ret->current_url = 0;
+    ret->url_strings = calloc(4096, sizeof(char*));
+    ret->size_of_prog = 0;
+}
+
 char** strSplit(char* a_str, const char a_delim)
 {
     //https://stackoverflow.com/questions/9210528/split-string-with-delimiters-in-c
@@ -191,17 +202,6 @@ ServerResponse* parseResponse(char *response) {
 }
 
 /**
- * @brief Intiltialize Program Env
- */
-runtime_env* init_env() {
-    runtime_env *ret = calloc(1, sizeof(runtime_env)); 
-    ret->playground = init_stack();
-    ret->current_url = 0;
-    ret->url_strings = calloc(4096, sizeof(char*));
-    ret->size_of_prog = 0;
-}
-
-/**
  * @brief add all url strings to this before running the env;
  */
 void append_url(runtime_env* R, char *url) {
@@ -223,10 +223,7 @@ int run_env(runtime_env *R) {
             continue;
         }
         ServerResponse *resp = parseResponse(ServResp);
-        switch (resp->responseCode){
-            case (100):
-
-        }
+        route(resp, R); //Does functionality of Response Code :)
         free(resp);
         R->current_url++;
     }

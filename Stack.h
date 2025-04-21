@@ -5,6 +5,8 @@ typedef struct stack* stack_o;
 
 stack_o init_stack();
 
+size_t length(stack_o S);
+
 void push(stack_o S, long data);
 
 long pop(stack_o S);
