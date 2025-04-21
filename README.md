@@ -73,3 +73,6 @@ Other Codes   | NOP
 #CODING TIPS:
 Use httpstat.us!!!!
 (although this gets rid of the fun...)
+
+To compile the executable just run the command
+`make`

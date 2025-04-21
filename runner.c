@@ -32,21 +32,6 @@
 
 #define MAXLINE 8192 /* Max text line length */
 
-struct runtime {
-    stack_o playground; //actual env
-    int current_url; //instruction pointer
-    char **url_strings; //All url strings to run
-    size_t size_of_prog; //Length of url_strings array
-};
-typedef struct runtime runtime_env;
-
-struct responseParsed {
-    int responseCode; //Response Code
-    char **headers; //Headers
-    char **headers_info; //Header-content corresponding to header in index
-};
-typedef struct responseParsed ServerResponse;
-
 /**
  * @brief Intiltialize Program Env
  */
@@ -56,6 +41,7 @@ runtime_env* init_run_env() {
     ret->current_url = 0;
     ret->url_strings = calloc(4096, sizeof(char*));
     ret->size_of_prog = 0;
+    return ret;
 }
 
 char** strSplit(char* a_str, const char a_delim)
@@ -158,7 +144,7 @@ char *handleHTTP(char *url) {
     rio_readinitb(&rio, client_fd);
     ssize_t n;
     printf("Starting...\n\n");
-    char *ret[MAXLINE*20];
+    char *ret = calloc(1, sizeof(char)*MAXLINE);
     while ((n = rio_readnb(&rio, buf, MAXLINE)) != 0) {
         // printf("%ld\n", n);
         strcat(ret, buf);
@@ -180,17 +166,17 @@ ServerResponse* parseResponse(char *response) {
     ret->headers = calloc(256, sizeof(char *));
     ret->headers_info = calloc(256, sizeof(char *));
 
-    char **tokens = strSplit(response, "\n");
+    char **tokens = strSplit(response, '\n');
     char *cur = tokens[0];
     int cur_iter = 0;
     while (cur != NULL) {
         printf("Current token: %s\n", cur);
         if (strncmp(cur, "HTTP", 5)) {
-            char **subTok = strSplit(cur, " ");
+            char **subTok = strSplit(cur, ' ');
             ret->responseCode = atoi(subTok[1]); 
             free(subTok);
         } else {
-            char **subTok = strSplit(cur, ": ");
+            char **subTok = strSplit(cur, ':');
             ret->headers[cur_iter] = subTok[0];
             ret->headers_info[cur_iter] = subTok[1];
             free(subTok);
@@ -214,12 +200,14 @@ void append_url(runtime_env* R, char *url) {
  * @return 1 if error 0 if successful run!
  */
 int run_env(runtime_env *R) {
+    int errored = 0;
     while (R->current_url < R->size_of_prog) {
         char *cur_URL = R->url_strings[R->current_url];
         char *ServResp = handleHTTP(cur_URL);
         if (ServResp == NULL) {
             R->current_url++;
             printf("Error!");
+            errored = 1;
             continue;
         }
         ServerResponse *resp = parseResponse(ServResp);
@@ -227,4 +215,5 @@ int run_env(runtime_env *R) {
         free(resp);
         R->current_url++;
     }
+    return errored;
 }

@@ -44,11 +44,16 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    runtime_env *R = init_run_env();
+
     while (fgets(url, sizeof(url), fd) != NULL) {
-        handleHTTP(url);
+        append_url(R, url);
     }
 
-    init_run_env();
+    //Run Program :)
+    if (run_env(R) == 1) {
+        return 1;
+    }
 
     return 0;
 }

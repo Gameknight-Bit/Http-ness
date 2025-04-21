@@ -1,5 +1,7 @@
 //Stack implementation :)
 
+#include <stdlib.h>
+
 struct stack;
 typedef struct stack* stack_o;
 

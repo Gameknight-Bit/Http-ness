@@ -78,7 +78,7 @@ void code200(ServerResponse *S, runtime_env *R) {
     push(R->playground, searchForHeader(S, "VAL"));
 }
 void code201(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 2) {
+    if (length(R->playground) < 2) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -87,7 +87,7 @@ void code201(ServerResponse *S, runtime_env *R) {
     push(R->playground, top+top1);
 }
 void code202(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 2) {
+    if (length(R->playground) < 2) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -96,7 +96,7 @@ void code202(ServerResponse *S, runtime_env *R) {
     push(R->playground, top-top1);
 }
 void code203(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 2) {
+    if (length(R->playground) < 2) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -105,7 +105,7 @@ void code203(ServerResponse *S, runtime_env *R) {
     push(R->playground, top/top1);
 }
 void code204(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 2) {
+    if (length(R->playground) < 2) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -119,7 +119,7 @@ void code205(ServerResponse *S, runtime_env *R) {
     push(R->playground, d);
 }
 void code206(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -127,7 +127,7 @@ void code206(ServerResponse *S, runtime_env *R) {
     push(R->playground, d);
 }
 void code207(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -135,7 +135,7 @@ void code207(ServerResponse *S, runtime_env *R) {
     push(R->playground, top);
 }
 void code208(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -144,7 +144,7 @@ void code208(ServerResponse *S, runtime_env *R) {
 }
 
 void code300(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -157,7 +157,7 @@ void code300(ServerResponse *S, runtime_env *R) {
     }
 }
 void code301(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -165,7 +165,7 @@ void code301(ServerResponse *S, runtime_env *R) {
     push(R->playground, top);
 }
 void code302(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
@@ -175,11 +175,17 @@ void code302(ServerResponse *S, runtime_env *R) {
 }
 
 void code400(ServerResponse *S, runtime_env *R) {
-    if (length(S) < 1) {
+    if (length(R->playground) < 1) {
         printf("Error: stack not large enough...\n");
         return;
     }
-    pop(S);
+    pop(R->playground);
+}
+void code402(ServerResponse *S, runtime_env *R) {
+    printf("I NEED MONEY!!!! :)$$$$$$$$$\n");
+}
+void code404(ServerResponse *S, runtime_env *R) {
+    R->playground = init_stack();
 }
 
 

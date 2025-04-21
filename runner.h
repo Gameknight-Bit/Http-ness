@@ -34,3 +34,4 @@ void append_url(runtime_env* R, char *url);
 
 runtime_env* init_run_env();
 
+int run_env(runtime_env *R);
