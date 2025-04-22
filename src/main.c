@@ -15,12 +15,12 @@
 void sigpipe_handler(int sig) {}
 
 int main(int argc, char **argv) {
-    char *f;
+    char *f = NULL;
 
     //Get file to interpret
     opterr = 0;
     int opt;
-    while ((opt = getopt(argc, argv, "f")) != -1) {
+    while ((opt = getopt(argc, argv, "f:")) != -1) {
         switch (opt) {
         case 'f':
             f = optarg;
@@ -36,6 +36,11 @@ int main(int argc, char **argv) {
 
     //Handle SIGPIPE signals
     Signal(SIGPIPE, sigpipe_handler);
+
+    if (f == NULL) {
+        printf("Error: Please use ./httpness -f <filename> to run your program\n");
+        return 1;
+    }
 
     FILE *fd = fopen(f, "r");
     char url[4096]; //Buffer
