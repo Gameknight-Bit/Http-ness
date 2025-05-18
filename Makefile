@@ -1,6 +1,8 @@
 # Compiler and flags
-CC = gcc
-CFLAGS = -g -MMD -Iinclude
+CC = clang
+CFLAGS = -g -fsanitize=address -fno-omit-frame-pointer -Iinclude
+LDFLAGS = -fsanitize=address
+
 
 # Directories
 SRC_DIR = src
@@ -17,7 +19,7 @@ all: $(TARGET)
 
 # Link the object files into the final executable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS)
 
 # Compile source files into object files in the build directory
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)

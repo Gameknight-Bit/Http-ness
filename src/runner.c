@@ -98,7 +98,9 @@ static const char *header_user_agent = "Mozilla/5.0"
  * @brief Handle's url string and returns a server response (or NULL if it failed...)
  */
 char *handleHTTP(char *url) {
-    URL_PARTS *parsedURL = calloc(1, sizeof(parsedURL));
+
+    printf("Parsing url: %s\n", url);
+    URL_PARTS *parsedURL = calloc(1, sizeof(URL_PARTS));
     if (parsedURL == NULL){
         printf("Malloc error: retry again!!");
         return NULL;
@@ -114,15 +116,15 @@ char *handleHTTP(char *url) {
                     "GET %s HTTP/1.1\r\n" \
                     "Host: %s\r\n" \
                     "User-Agent: %s\r\n" \
-                    "Connection: close\r\n",
+                    "Connection: close\r\n\r\n",
                     parsedURL->path, parsedURL->authority, header_user_agent);
     if (buflen >= MAXLINE) {
         printf("OVERFLOW ERROR!!!!");
     }
-    // printf("%d\n", buflen);
 
     printf("Sending the following: \n%s", serverRequest);
     printf("HOST: %s, PORT: %s\n", parsedURL->authority, parsedURL->port);
+    printf("HERE!\n");
 
     int client_fd = open_clientfd(parsedURL->authority, parsedURL->port);
     if (client_fd < 0) {
@@ -146,7 +148,7 @@ char *handleHTTP(char *url) {
     printf("Starting...\n\n");
     char *ret = calloc(1, sizeof(char)*MAXLINE);
     while ((n = rio_readnb(&rio, buf, MAXLINE)) != 0) {
-        // printf("%ld\n", n);
+        //printf("%ld\n", n);
         strcat(ret, buf);
     }
     close(client_fd);
@@ -162,25 +164,37 @@ char *handleHTTP(char *url) {
  */
 ServerResponse* parseResponse(char *response) {
 
+    printf("\nFull response: \n%s\n---- eof ----\n", response);
+
     ServerResponse* ret = calloc(1, sizeof(ServerResponse));
     ret->headers = calloc(256, sizeof(char *));
     ret->headers_info = calloc(256, sizeof(char *));
 
     char **tokens = strSplit(response, '\n');
     char *cur = tokens[0];
+    int tok_iter = 0;
     int cur_iter = 0;
     while (cur != NULL) {
         printf("Current token: %s\n", cur);
-        if (strncmp(cur, "HTTP", 5)) {
+        if (!(strncmp(cur, "HTTP", 4))) {
             char **subTok = strSplit(cur, ' ');
             ret->responseCode = atoi(subTok[1]); 
+            //printf("response code made\n");
             free(subTok);
+        } else if (strlen(cur) < 3) {
+            break; //Should be the space before body response... so stop
+        } else if (strchr(cur, ':') == NULL) {
+            continue;
         } else {
             char **subTok = strSplit(cur, ':');
             ret->headers[cur_iter] = subTok[0];
             ret->headers_info[cur_iter] = subTok[1];
+            //printf("header made\n");
             free(subTok);
+            cur_iter++;
         }
+        tok_iter++;
+        cur = tokens[tok_iter];
     }
 
     free(tokens);

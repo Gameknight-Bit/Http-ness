@@ -193,6 +193,7 @@ void code404(ServerResponse *S, runtime_env *R) {
  * @brief Handles http response and routes it to the correct function
  */
 void route(ServerResponse *S, runtime_env *R) {
+    printf("Running 'code %d':\n", S->responseCode);
     switch (S->responseCode) {
         case (100):
             code100(S, R);
@@ -233,6 +234,15 @@ void route(ServerResponse *S, runtime_env *R) {
             break;
         case (302):
             code302(S,R);
+            break;
+        case (400):
+            code400(S,R);
+            break;
+        case (402):
+            code402(S,R);
+            break;
+        case (404):
+            code404(S,R);
             break;
         default:
             //NOP
